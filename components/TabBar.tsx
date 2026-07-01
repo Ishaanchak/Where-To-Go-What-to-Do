@@ -196,14 +196,14 @@ export function TabBar() {
               href={href}
               onClick={isFriends ? handleFriendsClick : undefined}
               className={cn(
-                "flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-2 border-b-2 px-4 py-2.5 text-base font-medium transition-colors",
                 active
                   ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground hover:bg-secondary/50"
               )}
             >
               <span className="relative">
-                <Icon className="h-4 w-4" />
+                <Icon className="h-5 w-5" />
                 {isFriends && friendsBadge && (
                   <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
                 )}

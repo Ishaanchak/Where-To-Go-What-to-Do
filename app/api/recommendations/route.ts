@@ -18,6 +18,21 @@ async function getFeedbackExclusions(
   return (data ?? []).map((row) => row.activity_id);
 }
 
+/** Excludes activities any of the given users dismissed for a mood tag that overlaps moodTags. */
+async function getDismissedExclusions(
+  supabase: SupabaseClient,
+  userIds: string[],
+  moodTags: MoodTag[]
+): Promise<string[]> {
+  if (moodTags.length === 0) return [];
+  const { data } = await supabase
+    .from("dismissed_activities")
+    .select("activity_id")
+    .in("user_id", userIds)
+    .overlaps("mood_tags", moodTags);
+  return (data ?? []).map((row) => row.activity_id);
+}
+
 export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
@@ -72,9 +87,13 @@ export async function GET(request: Request) {
 
     const memberProfiles = profiles.map(toPreferenceProfile);
 
-    const excludeActivityIds = await getFeedbackExclusions(supabase, memberIds);
-
     const moodTags = (session.mood_tags ?? []) as MoodTag[];
+
+    const [excludeFeedback, excludeDismissed] = await Promise.all([
+      getFeedbackExclusions(supabase, memberIds),
+      getDismissedExclusions(supabase, memberIds, moodTags),
+    ]);
+    const excludeActivityIds = [...excludeFeedback, ...excludeDismissed];
 
     const results = scoreActivities(memberProfiles, moodTags, activities, {
       excludeActivityIds,
@@ -106,7 +125,11 @@ export async function GET(request: Request) {
 
   const userProfile = toPreferenceProfile(profile);
 
-  const excludeActivityIds = await getFeedbackExclusions(supabase, [userData.user.id]);
+  const [excludeFeedback, excludeDismissed] = await Promise.all([
+    getFeedbackExclusions(supabase, [userData.user.id]),
+    getDismissedExclusions(supabase, [userData.user.id], moodTags),
+  ]);
+  const excludeActivityIds = [...excludeFeedback, ...excludeDismissed];
 
   const results = scoreActivities(userProfile, moodTags, activities, {
     excludeActivityIds,

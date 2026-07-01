@@ -28,9 +28,29 @@ export function RecommendationsView({ groups }: { groups: Group[] }) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [saveActivity, setSaveActivity] = useState<Activity | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [dismissingIds, setDismissingIds] = useState<Set<string>>(new Set());
 
   const activeGroup = context === "solo" ? null : groups.find((g) => g.id === context) ?? null;
   const effectiveMoodTags = context === "solo" ? moodTags : (activeGroup?.mood_tags ?? []);
+
+  function handleDismiss(activity: Activity) {
+    setDismissingIds((prev) => new Set(prev).add(activity.id));
+
+    fetch("/api/dismiss", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activityId: activity.id, moodTags: effectiveMoodTags }),
+    });
+
+    setTimeout(() => {
+      setResults((prev) => prev.filter((r) => r.activity.id !== activity.id));
+      setDismissingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(activity.id);
+        return next;
+      });
+    }, 300);
+  }
 
   const needsMoreMembers = activeGroup !== null && activeGroup.memberCount < 2;
 
@@ -124,6 +144,7 @@ export function RecommendationsView({ groups }: { groups: Group[] }) {
             <ActivityCard
               key={activity.id}
               activity={activity as Activity}
+              dismissing={dismissingIds.has(activity.id)}
               onTap={() => {
                 setDetailActivity(activity as Activity);
                 setDetailOpen(true);
@@ -132,6 +153,7 @@ export function RecommendationsView({ groups }: { groups: Group[] }) {
                 setSaveActivity(activity as Activity);
                 setSaveOpen(true);
               }}
+              onDismiss={() => handleDismiss(activity as Activity)}
             />
           ))}
         </div>

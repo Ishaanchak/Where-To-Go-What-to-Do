@@ -113,7 +113,9 @@ export function SwipeStack({
           </TinderCard>
         ))}
       </div>
-      <p className="text-sm text-muted-foreground">Swipe right to like, left to pass.</p>
+      <p className="text-sm text-muted-foreground">
+        Swipe right to like, left to pass — the algorithm learns your preferences as you go.
+      </p>
       <ActivityDetail activity={detailActivity} open={detailOpen} onOpenChange={setDetailOpen} />
       <SaveToListModal activity={saveActivity} open={saveOpen} onOpenChange={setSaveOpen} />
     </div>
