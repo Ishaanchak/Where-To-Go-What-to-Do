@@ -41,7 +41,23 @@ export async function searchPlaces(query: string, near?: string): Promise<PlaceR
     throw new Error("GOOGLE_PLACES_API_KEY is not configured");
   }
 
-  const textQuery = near ? `${query} near ${near}` : query;
+  const body: Record<string, unknown> = { textQuery: query };
+
+  if (near) {
+    const parts = near.split(",").map(Number);
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      // Use locationBias so results are anchored to the user's actual coordinates
+      // regardless of which country Vercel's servers are in.
+      body.locationBias = {
+        circle: {
+          center: { latitude: parts[0], longitude: parts[1] },
+          radius: 50000,
+        },
+      };
+    } else {
+      body.textQuery = `${query} near ${near}`;
+    }
+  }
 
   const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
     method: "POST",
@@ -50,7 +66,7 @@ export async function searchPlaces(query: string, near?: string): Promise<PlaceR
       "X-Goog-Api-Key": apiKey,
       "X-Goog-FieldMask": FIELD_MASK,
     },
-    body: JSON.stringify({ textQuery }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
