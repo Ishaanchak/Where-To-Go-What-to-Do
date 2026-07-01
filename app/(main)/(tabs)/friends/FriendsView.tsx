@@ -163,7 +163,14 @@ export function FriendsView({
       <Tabs defaultValue="friends">
         <TabsList>
           <TabsTrigger value="friends">Friends</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="pending">
+            Pending
+            {incoming.length > 0 && (
+              <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
+                {incoming.length}
+              </span>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="friends" className="flex flex-col gap-2">

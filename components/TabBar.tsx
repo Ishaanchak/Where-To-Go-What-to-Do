@@ -134,16 +134,67 @@ function UserMenu() {
 
 export function TabBar() {
   const pathname = usePathname();
+  const [friendsBadge, setFriendsBadge] = useState(false);
+  const [acceptedFriendCount, setAcceptedFriendCount] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const userId = data.user.id;
+
+      const [{ count: pending }, { count: accepted }] = await Promise.all([
+        supabase
+          .from("friend_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("receiver_id", userId)
+          .eq("status", "pending"),
+        supabase
+          .from("friend_requests")
+          .select("id", { count: "exact", head: true })
+          .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+          .eq("status", "accepted"),
+      ]);
+
+      const pendingCount = pending ?? 0;
+      const acceptedTotal = accepted ?? 0;
+      setAcceptedFriendCount(acceptedTotal);
+
+      // If already on the friends tab, mark everything as seen immediately.
+      if (window.location.pathname.startsWith("/friends")) {
+        localStorage.setItem("lastSeenFriendCount", String(acceptedTotal));
+        setFriendsBadge(false);
+        return;
+      }
+
+      const lastSeenStr = localStorage.getItem("lastSeenFriendCount");
+      if (lastSeenStr === null) {
+        // First ever visit — initialise without triggering a badge.
+        localStorage.setItem("lastSeenFriendCount", String(acceptedTotal));
+        setFriendsBadge(pendingCount > 0);
+      } else {
+        const lastSeen = parseInt(lastSeenStr, 10);
+        setFriendsBadge(pendingCount > 0 || acceptedTotal > lastSeen);
+      }
+    });
+  }, []);
+
+  function handleFriendsClick() {
+    setFriendsBadge(false);
+    localStorage.setItem("lastSeenFriendCount", String(acceptedFriendCount));
+  }
 
   return (
     <header className="flex items-center justify-between border-b px-4 py-2">
       <nav className="flex gap-1">
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
+          const isFriends = href === "/friends";
           return (
             <Link
               key={href}
               href={href}
+              onClick={isFriends ? handleFriendsClick : undefined}
               className={cn(
                 "flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
                 active
@@ -151,7 +202,12 @@ export function TabBar() {
                   : "border-transparent text-muted-foreground hover:bg-secondary/50"
               )}
             >
-              <Icon className="h-4 w-4" />
+              <span className="relative">
+                <Icon className="h-4 w-4" />
+                {isFriends && friendsBadge && (
+                  <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
+                )}
+              </span>
               <span className="hidden sm:inline">{label}</span>
             </Link>
           );
