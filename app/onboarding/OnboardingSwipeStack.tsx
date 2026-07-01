@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { SwipeCard } from "@/components/SwipeCard";
 import { Button } from "@/components/ui/button";
+import { OnboardingToast } from "@/components/OnboardingToast";
 import type { Activity } from "@/lib/scoring";
 
 export function OnboardingSwipeStack({ activities }: { activities: Activity[] }) {
@@ -84,6 +85,10 @@ export function OnboardingSwipeStack({ activities }: { activities: Activity[] })
         ))}
       </div>
       <p className="text-sm text-muted-foreground">Swipe right to like, left to pass.</p>
+      <OnboardingToast
+        storageKey="toast_swipe_seen"
+        message="Swipe right to like an activity, left to pass. Tap any card for more details and venues near you."
+      />
     </div>
   );
 }
