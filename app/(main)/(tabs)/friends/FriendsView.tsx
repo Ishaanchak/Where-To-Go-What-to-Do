@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
+import { OnboardingToast } from "@/components/OnboardingToast";
 import type { FriendProfile, PendingRequest } from "./page";
 
 type SearchResult = { id: string; username: string | null };
@@ -233,6 +234,11 @@ export function FriendsView({
           </div>
         </TabsContent>
       </Tabs>
+
+      <OnboardingToast
+        storageKey="toast_friends_seen"
+        message="Search for friends by username and add them. Friends can be invited to groups for shared recommendations."
+      />
     </div>
   );
 }

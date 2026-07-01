@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
+import { OnboardingToast } from "@/components/OnboardingToast";
 
 type ListSummary = { id: string; name: string; itemCount: number; emojis: string[] };
 
@@ -99,6 +100,11 @@ export function SavedListsView({ initialLists }: { initialLists: ListSummary[] }
           onCtaClick={() => setCreating(true)}
         />
       )}
+
+      <OnboardingToast
+        storageKey="toast_saved_seen"
+        message="Create named lists to save activities you want to revisit — add to them from anywhere in the app."
+      />
     </div>
   );
 }

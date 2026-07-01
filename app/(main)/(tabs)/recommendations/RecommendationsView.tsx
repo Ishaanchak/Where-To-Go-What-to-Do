@@ -8,6 +8,7 @@ import { MoodTagSelector } from "@/components/MoodTagSelector";
 import { GroupContextSwitcher, type GroupOption } from "@/components/GroupContextSwitcher";
 import { ActivityDetail } from "@/components/ActivityDetail";
 import { SaveToListModal } from "@/components/SaveToListModal";
+import { OnboardingToast } from "@/components/OnboardingToast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOOD_TAG_LABELS, type Activity, type MoodTag, type ScoredActivity } from "@/lib/scoring";
@@ -165,6 +166,10 @@ export function RecommendationsView({ groups }: { groups: Group[] }) {
 
       <ActivityDetail activity={detailActivity} open={detailOpen} onOpenChange={setDetailOpen} />
       <SaveToListModal activity={saveActivity} open={saveOpen} onOpenChange={setSaveOpen} />
+      <OnboardingToast
+        storageKey="toast_recommendations_seen"
+        message="Select a vibe at the top to filter recommendations to your mood — your results update instantly. Tap any activity to explore local venues."
+      />
     </div>
   );
 }

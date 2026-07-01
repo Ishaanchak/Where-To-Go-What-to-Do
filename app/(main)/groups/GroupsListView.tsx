@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
+import { OnboardingToast } from "@/components/OnboardingToast";
 import { MOOD_TAG_LABELS, type MoodTag } from "@/lib/scoring";
 
 type Group = {
@@ -63,6 +64,11 @@ export function GroupsListView({ groups }: { groups: Group[] }) {
           ctaHref="/groups/create"
         />
       )}
+
+      <OnboardingToast
+        storageKey="toast_groups_seen"
+        message="Create a group with friends to get activity recommendations based on everyone's preferences combined."
+      />
     </div>
   );
 }
