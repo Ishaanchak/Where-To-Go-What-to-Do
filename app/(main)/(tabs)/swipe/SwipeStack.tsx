@@ -6,6 +6,7 @@ import TinderCard from "react-tinder-card";
 import { SwipeCard } from "@/components/SwipeCard";
 import { ActivityDetail } from "@/components/ActivityDetail";
 import { SaveToListModal } from "@/components/SaveToListModal";
+import { OnboardingToast } from "@/components/OnboardingToast";
 import type { Activity } from "@/lib/scoring";
 
 const PRELOAD_THRESHOLD = 3;
@@ -118,6 +119,10 @@ export function SwipeStack({
       </p>
       <ActivityDetail activity={detailActivity} open={detailOpen} onOpenChange={setDetailOpen} />
       <SaveToListModal activity={saveActivity} open={saveOpen} onOpenChange={setSaveOpen} />
+      <OnboardingToast
+        storageKey="toast_swipe_tab_seen"
+        message="Spotted something fun? Tap the card to dig into the details and find great venues near you."
+      />
     </div>
   );
 }

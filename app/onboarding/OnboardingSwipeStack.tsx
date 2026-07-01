@@ -87,7 +87,7 @@ export function OnboardingSwipeStack({ activities }: { activities: Activity[] })
       <p className="text-sm text-muted-foreground">Swipe right to like, left to pass.</p>
       <OnboardingToast
         storageKey="toast_swipe_seen"
-        message="Swipe right to like an activity, left to pass. Tap any card for more details and venues near you."
+        message="Swipe through 20 activities so we can learn what you're into — or hit Skip to jump straight into the app."
       />
     </div>
   );
